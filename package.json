@@ -1,7 +1,7 @@
 {
   "name": "cursor-count",
   "main": "./lib/cursor-count",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Display number of multiple cursors next to the position of cursor in the status bar.",
   "repository": "https://github.com/paradoxxxzero/cursor-count",
   "license": "MIT",
