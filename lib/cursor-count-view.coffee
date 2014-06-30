@@ -17,7 +17,7 @@ class CursorCountView extends View
 
   update: =>
     editor = atom.workspace.getActiveEditor()
-    len = editor.getCursors().length
+    len = editor?.getCursors().length
     if len > 1
       @text("#{len}").show()
     else
