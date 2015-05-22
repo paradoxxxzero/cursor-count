@@ -6,7 +6,14 @@
   "repository": "https://github.com/paradoxxxzero/cursor-count",
   "license": "MIT",
   "engines": {
-    "atom": ">0.50.0"
+    "atom": ">=0.194.0 <2.0.0"
+  },
+  "consumedServices": {
+    "status-bar": {
+      "versions": {
+        "^1.0.0": "consumeStatusBar"
+      }
+    }
   },
   "dependencies": {}
 }

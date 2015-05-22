@@ -1,15 +1,27 @@
-CursorCountView = require './cursor-count-view'
+{CompositeDisposable} = require 'atom'
 
 module.exports =
-  activate: ->
-    if atom.workspaceView.statusBar
-      @ccv = new CursorCountView(atom.workspaceView.statusBar)
-      atom.workspaceView.statusBar.find('.cursor-position').after(@ccv)
-    else
-      atom.packages.once 'activated', ->
-        @ccv = new CursorCountView(atom.workspaceView.statusBar)
-        atom.workspaceView.statusBar.find('.cursor-position').after(@ccv)
+  consumeStatusBar: (statusBar) ->
+    @observeEditors()
+    CursorCountView = require './cursor-count-view'
+    @view = new CursorCountView()
+    @view.initialize()
+    @tile = statusBar.addLeftTile(item: @view, priority: 10)
 
   deactivate: ->
-    @ccv?.destroy()
-    @ccv = null
+    @osberver?.dispose()
+    @observer = null
+    @view?.destroy()
+    @view = null
+    @tile?.destroy()
+    @tile = null
+
+  observeEditors: ->
+    @observer = atom.workspace.observeTextEditors (editor) =>
+      disposables = new CompositeDisposable
+      disposables.add editor.onDidRemoveCursor =>
+        @view?.update(editor)
+      disposables.add editor.observeCursors =>
+        @view?.update(editor)
+      editor.onDidDestroy ->
+        disposables.dispose()
