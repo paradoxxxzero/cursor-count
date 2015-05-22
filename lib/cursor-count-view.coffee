@@ -1,24 +1,32 @@
-{View} = require 'atom'
+{CompositeDisposable} = require 'atom'
 
-module.exports =
-class CursorCountView extends View
-  @content: ->
-    @div class: 'cursor-count inline-block'
-
-  initialize: (@statusBar) ->
-    @subscribe @statusBar, 'active-buffer-changed', @update
-    @subscribe atom.workspaceView, 'selection:changed', @update
-
-  destroy: ->
-    @remove()
-
-  afterAttach: ->
+class CursorCountView extends HTMLElement
+  initialize: ->
+    @classList.add('inline-block')
+    @createEventHandlers()
     @update()
 
-  update: =>
-    editor = atom.workspace.getActiveEditor()
+  destroy: ->
+    @disposables?.dispose()
+    @disposables = null
+
+  update: (editor = atom.workspace.getActiveTextEditor()) ->
     len = editor?.getCursors().length
     if len > 1
-      @text("#{len}").show()
+      @textContent = "|#{len}"
+      @style.display = 'inline-block'
     else
-      @hide()
+      @textContent = ''
+      @style.display = 'none'
+
+  createEventHandlers: ->
+    @disposables = new CompositeDisposable
+    @createActivePaneHandler()
+
+  createActivePaneHandler: ->
+    @disposables.add atom.workspace.onDidChangeActivePaneItem =>
+      @update()
+
+module.exports = document.registerElement('status-bar-cursor-count',
+                                          prototype: CursorCountView.prototype,
+                                          extends: 'div')
